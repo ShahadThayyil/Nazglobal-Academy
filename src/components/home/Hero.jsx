@@ -1,147 +1,85 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
-const Hero = () => {
+gsap.registerPlugin(ScrollTrigger);
+
+const HeritageAcademyHero = () => {
   const containerRef = useRef(null);
-  const wordRef = useRef(null);
-  const fillTextRef = useRef(null);
-  const words = ["Mastery.", "Excellence.", "Legacy."];
+  const imageWrapRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.8 } });
+  useGSAP(() => {
+    // 1. Initial Entrance Animation
+    const tl = gsap.timeline({ defaults: { ease: "power3.out", duration: 1.6 } });
 
-      // 1. Entrance: Typography reveal with Blur
-      tl.from(".reveal-main", {
-        y: 80,
-        opacity: 0,
-        filter: "blur(20px)",
-        stagger: 0.1,
-        delay: 0.5 
-      })
-      // 2. The Text-Fill Animation (Light to Dark Blue)
-      .to(".text-fill-animate", {
-        backgroundPositionX: "0%",
-        duration: 2,
-        stagger: 0.05,
-        ease: "power2.inOut"
-      }, "-=1")
-      .from(".reveal-sub", {
-        opacity: 0,
-        y: 20,
-        stagger: 0.1,
-        duration: 1
-      }, "-=1.5")
-      .from(".hero-visual", {
+    tl.from(".hero-title span", { y: 110, opacity: 0, stagger: 0.15 })
+      .from(imageWrapRef.current, { 
         clipPath: "inset(100% 0% 0% 0%)", 
-        duration: 1.8,
-      }, "-=1.8");
+        scale: 1.1,
+        duration: 2 
+      }, "-=1.2");
 
-      // 3. Seamless Word Cycling Logic
-      let i = 0;
-      const cycle = () => {
-        const next = (i + 1) % words.length;
-        const cycleTl = gsap.timeline({ onComplete: () => { i = next; cycle(); } });
+    // 2. THE STACKING LOGIC (The Fix)
+    // ഈ സെക്ഷനെ സ്ക്രീനിൽ ലോക്ക് ചെയ്തു നിർത്തുന്നു
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: "bottom top", // അടുത്ത സെക്ഷൻ വരുന്നത് വരെ ഇത് ഇവിടെ നിൽക്കും
+      pin: true,
+      pinSpacing: false, // അടുത്ത സെക്ഷന് ഇതിന് മുകളിലേക്ക് കയറാൻ ഇത് അത്യാവശ്യമാണ്
+      scrub: true,
+    });
 
-        cycleTl.to(wordRef.current, {
-          y: "-30%", opacity: 0, filter: "blur(15px)", duration: 0.7, ease: "power3.in", delay: 2.5
-        })
-        .set(wordRef.current, { innerText: words[next], y: "30%" })
-        .to(wordRef.current, {
-          y: "0%", opacity: 1, filter: "blur(0px)", duration: 0.9, ease: "expo.out"
-        });
-      };
-      
-      tl.add(() => cycle());
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
+    // പശ്ചാത്തലത്തിലുള്ള ഇമേജിന് ചെറിയൊരു പാരാലാക്സ് ഇഫക്റ്റ് കൂടി നൽകാം
+    gsap.to(imageWrapRef.current, {
+      y: 100,
+      scale: 0.95,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
+
+  }, { scope: containerRef });
 
   return (
-    <section 
+    <div 
       ref={containerRef} 
-      className="relative min-h-screen bg-[#FDFDFD] flex flex-col px-6 md:px-10 pt-32 md:pt-40 pb-20 overflow-hidden"
+      // z-index കുറച്ചു നൽകുക (ഉദാഹരണത്തിന് 10)
+      className="relative w-full h-screen bg-[#FDFDFD] text-[#1a1a1a] overflow-hidden flex flex-col z-10"
     >
-      <div className="w-full flex-1 flex flex-col justify-center">
-        
-        {/* MASSIVE HEADLINE */}
-        <div className="flex flex-col mb-12 md:mb-16">
-          <div className="overflow-hidden">
-            <h1 className="reveal-main text-[16vw] lg:text-[13vw] font-[950] leading-[0.8] tracking-tighter uppercase text-[#002147]">
-              The New
-            </h1>
-          </div>
-          <div className="overflow-hidden h-[15vw] lg:h-[12vw] flex items-center">
-            <h1 
-              ref={wordRef}
-              className="text-[16vw] lg:text-[13vw] font-[950] leading-[0.8] tracking-tighter uppercase text-[#002147]"
-            >
-              Mastery.
-            </h1>
-          </div>
+      <div className="h-20 md:h-24 w-full shrink-0" />
+
+      <section className="flex-1 w-full px-6 md:px-12 lg:px-20 relative flex flex-col items-center">
+        <div className="w-full text-center z-20 mt-4 md:mt-8">
+          <h1 className="hero-title text-5xl md:text-7xl lg:text-[7vw] font-serif leading-[0.95] tracking-tighter">
+            <span className="block overflow-hidden">Architecting a</span>
+            <span className="block overflow-hidden text-[#800000] italic py-2">Legacy of Wisdom.</span>
+          </h1>
         </div>
 
-        {/* CONTENT GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-end">
-          
-          {/* EXPANDED NARRATIVE AREA */}
-          <div className="lg:col-span-6 order-2 lg:order-1">
-             <div className="max-w-2xl">
-                {/* TEXT-FILL ANIMATION TEXT */}
-                <h3 
-                  className="text-fill-animate text-2xl md:text-4xl font-[950] uppercase tracking-tighter leading-[0.9] mb-8"
-                  style={{
-                    background: 'linear-gradient(to right, #002147 50%, #00214720 50%)',
-                    backgroundSize: '200% 100%',
-                    backgroundPositionX: '100%',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  Architecting the Future of Global Leadership and Professional Integrity.
-                </h3>
-
-                <div className="reveal-sub space-y-6">
-                  <p className="text-lg md:text-xl font-bold text-[#002147]/80 leading-snug uppercase tracking-tight">
-                    Nazglobal Academy is a premier private educational institute dedicated to high-performance learning and world-class career placement.
-                  </p>
-                  
-                  <p className="text-sm md:text-base font-medium text-[#002147]/60 leading-relaxed uppercase tracking-tight border-l-2 border-[#002147] pl-6">
-                    Pioneering elite educational standards through a synthesis of rigorous academic inquiry and practical global career strategies. Our curriculum is engineered to transform high-potential students into world-class leaders, equipped for the complexities of the 2026 landscape.
-                  </p>
-
-                  <div className="pt-4">
-                    <button className="group relative border-b-2 border-[#002147] pb-1 text-[11px] font-black uppercase tracking-[0.3em] text-[#002147] hover:text-blue-600 hover:border-blue-600 transition-all">
-                      Enrollment 2026 Phase I
-                    </button>
-                  </div>
-                </div>
-             </div>
-          </div>
-
-          {/* VISUAL AREA */}
-          <div className="lg:col-span-6 order-1 lg:order-2">
-            <div className="hero-visual relative aspect-video overflow-hidden rounded-sm bg-gray-100 shadow-2xl">
-              <img 
-                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop" 
-                className="w-full h-full object-cover grayscale opacity-90 transition-all duration-1000 hover:grayscale-0"
-                alt="Institutional Excellence"
-              />
-            </div>
-            <div className="reveal-sub mt-4 flex justify-between text-[9px] font-black uppercase tracking-widest text-[#002147]/40">
-              <span>( 01 ) Global Performance Metrics</span>
-              <span>Nazglobal Academy 2026</span>
-            </div>
+        <div className="relative w-full max-w-6xl flex-1 mt-[-2vh] md:mt-[-5vh] z-10 group">
+          <div 
+            ref={imageWrapRef}
+            className="w-full h-full rounded-t-full overflow-hidden shadow-[0_50px_100px_rgba(128,0,0,0.12)] border-x-[1px] border-t-[1px] border-gray-100 bg-white"
+          >
+            <img 
+              src="/Forground.png" 
+              className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000" 
+              alt="Academy Campus" 
+            />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* BACKGROUND BRANDING */}
-      <div className="absolute -bottom-10 -right-5 text-[22vw] font-[950] text-[#002147]/[0.01] pointer-events-none select-none uppercase leading-none">
-        Nazglobal
+      <div className="absolute -bottom-10 -right-10 pointer-events-none opacity-[0.03] select-none">
+        <h2 className="text-[18vw] font-serif font-black leading-none uppercase tracking-tighter">Nazglobal</h2>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default Hero;
+export default HeritageAcademyHero;

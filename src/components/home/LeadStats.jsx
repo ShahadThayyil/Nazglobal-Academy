@@ -1,158 +1,126 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const LeadStats = () => {
   const sectionRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // 1. Divider lines drawing on scroll
-      const dividers = gsap.utils.toArray(".line-divider");
-      dividers.forEach((line) => {
-        gsap.from(line, {
-          scaleX: 0,
-          transformOrigin: "left",
-          ease: "none",
-          scrollTrigger: {
-            trigger: line,
-            start: "top 90%",
-            end: "top 70%",
-            scrub: 1,
-          }
-        });
+  useGSAP(() => {
+    // 1. Stacking Effect Logic
+    ScrollTrigger.create({
+      trigger: sectionRef.current,
+      start: "top bottom",
+      end: "top top",
+      scrub: true,
+    });
+
+    // 2. Line & Content Animations
+    const items = gsap.utils.toArray(".stat-item");
+    items.forEach((item) => {
+      const num = item.querySelector(".count-val");
+      const target = parseInt(num.getAttribute('data-target'));
+
+      gsap.from(item, {
+        y: 60,
+        autoAlpha: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: item,
+          start: "top 90%",
+        }
       });
 
-      // 2. Smooth Text Fill Animation for Titles & Numbers
-      const fillTexts = gsap.utils.toArray(".stat-fill");
-      fillTexts.forEach((text) => {
-        gsap.to(text, {
-          backgroundPositionX: "0%",
-          ease: "none",
-          scrollTrigger: {
-            trigger: text,
-            start: "top 90%",
-            end: "top 60%",
-            scrub: 0.8, // പതുക്കെ നിറഞ്ഞു വരാൻ
-          }
-        });
+      gsap.to(num, {
+        innerText: target,
+        duration: 2,
+        snap: { innerText: 1 },
+        scrollTrigger: {
+          trigger: num,
+          start: "top 95%",
+        }
       });
+    });
+  }, { scope: sectionRef });
 
-      // 3. Number Counter Logic (Triggered on viewport entry)
-      const numbers = gsap.utils.toArray(".stat-count");
-      numbers.forEach((num) => {
-        const endValue = parseInt(num.innerText);
-        gsap.from(num, {
-          innerText: 0,
-          duration: 2,
-          snap: { innerText: 1 },
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: num,
-            start: "top 90%",
-            toggleActions: "play none none reverse",
-          }
-        });
-      });
-
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  // Design System Style: Text Fill Effect
-  const fillStyle = {
-    background: 'linear-gradient(to right, #002147 50%, #00214720 50%)',
-    backgroundSize: '200% 100%',
-    backgroundPositionX: '100%',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-  };
+  const stats = [
+    { id: '01', label: 'Academic Legacy', val: '12', unit: 'Years', desc: 'A decade of nurturing disciplined minds and cultural heritage.' },
+    { id: '02', label: 'Global Success', val: '98', unit: '%', desc: 'Placement rate across international frontiers.' },
+    { id: '03', label: 'Expert Faculty', val: '150', unit: '+', desc: 'Mentors from world-class institutions.' },
+    { id: '04', label: 'Global Network', val: '64', unit: 'Partners', desc: 'Collaborations with global universities.' },
+  ];
 
   return (
     <section 
       ref={sectionRef} 
-      className="relative bg-[#FDFDFD] py-32 md:py-56 px-6 md:px-10 overflow-hidden"
+      className="relative z-30 bg-[#FDFDFD] shadow-[0_-50px_100px_rgba(0,0,0,0.03)]"
     >
-      <div className="max-w-[1920px] mx-auto">
+      <div className="max-w-7xl mx-auto py-20 md:py-32 px-6 lg:px-20">
         
-        {/* SECTION INTRO - Clean Typography */}
-        <div className="mb-32">
-          <h2 className="stat-fill text-[12vw] lg:text-[7vw] font-[950] leading-none text-[#002147] uppercase tracking-tighter mb-10" style={fillStyle}>
-            The Performance <br /> Index.
-          </h2>
-          <p className="max-w-xl text-lg font-bold text-[#002147]/60 uppercase tracking-tight border-l-2 border-[#002147]/10 pl-8">
-            Establishing institutional integrity through measurable academic performance and career placement.
-          </p>
+        {/* SECTION HEADER - Refined for Institutional Look */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8">
+          <div className="stats-title">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-[1px] bg-[#DAA520]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#800000]">Impact Assessment</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-serif text-[#1a1a1a] leading-[1.1] tracking-tighter">
+              Measurable <br />
+              <span className="text-[#800000] italic">Excellence.</span>
+            </h2>
+          </div>
+          <div className="max-w-xs border-l border-gray-100 pl-6 pb-1">
+            <p className="text-[13px] md:text-sm text-gray-400 uppercase tracking-widest leading-relaxed">
+              Established institutional standards through consistent growth and vision.
+            </p>
+          </div>
         </div>
 
-        {/* LINEAR DATA STREAM */}
-        <div className="flex flex-col mt-20">
-          
-          {/* Metric 01: Legacy */}
-          <div className="group relative flex flex-col md:flex-row md:items-end justify-between py-16 md:py-24">
-            <div className="line-divider absolute top-0 left-0 w-full h-[1px] bg-[#002147]/10"></div>
-            
-            <div className="flex flex-col gap-6">
-              <span className="text-[10px] font-black text-[#002147]/40 uppercase tracking-[0.5em]">Heritage / 01</span>
-              <h3 className="stat-fill text-4xl md:text-6xl lg:text-7xl font-[950] text-[#002147] uppercase tracking-tighter" style={fillStyle}>
-                Institutional Mastery
-              </h3>
-            </div>
+        {/* MINIMALIST LIST LAYOUT */}
+        <div className="space-y-0">
+          {stats.map((item, i) => (
+            <div 
+              key={i} 
+              className="stat-item group border-t border-gray-100 py-10 md:py-16 flex flex-col md:flex-row md:items-center justify-between gap-8 transition-colors hover:bg-gray-50/50 px-4"
+            >
+              <div className="flex items-center gap-6 md:w-1/3">
+                <span className="text-[10px] font-bold text-[#DAA520] tracking-widest">{item.id}</span>
+                <h4 className="text-lg md:text-xl font-serif text-[#1a1a1a] tracking-tight">{item.label}</h4>
+              </div>
 
-            <div className="mt-10 md:mt-0 flex items-baseline gap-2">
-              <span className="stat-count stat-fill text-8xl md:text-[11rem] font-[950] leading-none tracking-tighter" style={fillStyle}>
-                12
-              </span>
-              <span className="stat-fill text-3xl font-black text-[#002147]" style={fillStyle}>YR</span>
-            </div>
-          </div>
+              {/* Reduced Count Sizes for Professional look */}
+              <div className="flex items-baseline md:w-1/3 md:justify-center">
+                <span 
+                  className="count-val text-5xl md:text-7xl font-serif leading-none tracking-tighter text-[#1a1a1a]"
+                  data-target={item.val}
+                >
+                  0
+                </span>
+                <span className="text-lg md:text-xl font-light text-[#800000] ml-2 italic">{item.unit}</span>
+              </div>
 
-          {/* Metric 02: Success */}
-          <div className="group relative flex flex-col md:flex-row md:items-end justify-between py-16 md:py-24">
-            <div className="line-divider absolute top-0 left-0 w-full h-[1px] bg-[#002147]/10"></div>
-            
-            <div className="flex flex-col gap-6">
-              <span className="text-[10px] font-black text-[#002147]/40 uppercase tracking-[0.5em]">Outcome / 02</span>
-              <h3 className="stat-fill text-4xl md:text-6xl lg:text-7xl font-[950] text-[#002147] uppercase tracking-tighter" style={fillStyle}>
-                Career Placement
-              </h3>
+              <div className="md:w-1/4">
+                <p className="text-gray-500 leading-relaxed text-[13px] md:text-sm">
+                  {item.desc}
+                </p>
+              </div>
             </div>
-
-            <div className="mt-10 md:mt-0 flex items-baseline gap-2">
-              <span className="stat-count stat-fill text-8xl md:text-[11rem] font-[950] leading-none tracking-tighter" style={fillStyle}>
-                98
-              </span>
-              <span className="stat-fill text-3xl font-black text-[#002147]" style={fillStyle}>%</span>
-            </div>
-          </div>
-
-          {/* Metric 03: Reach */}
-          <div className="group relative flex flex-col md:flex-row md:items-end justify-between py-16 md:py-24">
-            <div className="line-divider absolute top-0 left-0 w-full h-[1px] bg-[#002147]/10"></div>
-            <div className="line-divider absolute bottom-0 left-0 w-full h-[1px] bg-[#002147]/10"></div>
-            
-            <div className="flex flex-col gap-6">
-              <span className="text-[10px] font-black text-[#002147]/40 uppercase tracking-[0.5em]">Scale / 03</span>
-              <h3 className="stat-fill text-4xl md:text-6xl lg:text-7xl font-[950] text-[#002147] uppercase tracking-tighter" style={fillStyle}>
-                Academic Scope
-              </h3>
-            </div>
-
-            <div className="mt-10 md:mt-0 flex items-baseline gap-2">
-              <span className="stat-count stat-fill text-8xl md:text-[11rem] font-[950] leading-none tracking-tighter" style={fillStyle}>
-                64
-              </span>
-              <span className="stat-fill text-3xl font-black text-[#002147]" style={fillStyle}>+</span>
-            </div>
-          </div>
-
+          ))}
+          <div className="border-t border-gray-100" />
         </div>
 
-        {/* METADATA FOOTER */}
-        
+        {/* FOOTER ACTION */}
+        <div className="mt-20 flex justify-center">
+          <button className="group flex flex-col items-center gap-4">
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#800000]">Institutional Report</span>
+            <div className="w-[1px] h-16 bg-gray-200 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-full h-full bg-[#DAA520] -translate-y-full group-hover:translate-y-0 transition-transform duration-700" />
+            </div>
+          </button>
+        </div>
       </div>
     </section>
   );
