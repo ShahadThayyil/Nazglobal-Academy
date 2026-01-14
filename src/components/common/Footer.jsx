@@ -2,155 +2,139 @@ import React, { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { ArrowUpRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const InquiryFooter = () => {
-  const containerRef = useRef(null);
+  const footerRef = useRef(null);
+  const revealTextRef = useRef(null);
 
   useGSAP(() => {
-    // 1. Staggered Form Fields Reveal
-    gsap.from(".form-element", {
-      y: 30,
-      autoAlpha: 0,
+    let mm = gsap.matchMedia();
+
+    // DESKTOP: Mountain Reveal Animation
+    mm.add("(min-width: 1024px)", () => {
+      gsap.fromTo(revealTextRef.current, 
+        { 
+          y: "100%", 
+          scale: 0.8,
+          opacity: 0 
+        }, 
+        {
+          y: "0%",
+          scale: 1,
+          opacity: 1,
+          ease: "power4.out",
+          scrollTrigger: {
+            trigger: footerRef.current,
+            start: "top bottom",
+            end: "bottom bottom",
+            scrub: 1.5,
+          }
+        }
+      );
+    });
+
+    // Simple Stagger for Links
+    gsap.from(".footer-link-group", {
+      y: 20,
+      opacity: 0,
       stagger: 0.1,
       duration: 1,
       ease: "power3.out",
       scrollTrigger: {
-        trigger: ".form-container",
+        trigger: footerRef.current,
         start: "top 80%",
       }
     });
 
-    // 2. Footer Logo Animation
-    gsap.from(".footer-logo", {
-      scale: 0.8,
-      autoAlpha: 0,
-      duration: 1.5,
-      scrollTrigger: {
-        trigger: ".footer-main",
-        start: "top 90%",
-      }
-    });
-
-  }, { scope: containerRef });
+  }, { scope: footerRef });
 
   return (
-    <footer ref={containerRef} className="bg-[#FDFDFD] pt-24 border-t border-gray-100">
+    <footer ref={footerRef} className="relative bg-[#0A0A0A] pt-32 pb-12 overflow-hidden">
       
-      {/* --- INQUIRY SECTION --- */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-20 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-20 items-start form-container">
-          
-          {/* Left: Content */}
-          <div className="lg:col-span-5">
-            <div className="flex items-center gap-4 mb-8 form-element">
-              <div className="w-12 h-[1px] bg-[#DAA520]" />
-              <span className="text-[10px] font-black text-[#800000] uppercase tracking-[0.5em]">Admissions 2026</span>
-            </div>
-            <h2 className="text-5xl md:text-7xl font-serif text-[#1a1a1a] leading-none tracking-tighter mb-8 form-element">
-              Begin Your <br /> <span className="text-[#800000] italic">Trajectory.</span>
-            </h2>
-            <p className="text-gray-500 font-medium leading-relaxed max-w-sm mb-12 form-element">
-              Connect with our admissions collective to discuss your professional future and campus placement opportunities.
-            </p>
-            
-            <div className="flex flex-col gap-6 form-element">
-              <div className="group cursor-pointer">
-                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest block mb-1 group-hover:text-[#DAA520] transition-colors">General Inquiry</span>
-                <span className="text-lg font-serif text-[#1a1a1a]">admissions@nazglobal.edu</span>
-              </div>
-              <div className="group cursor-pointer">
-                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest block mb-1 group-hover:text-[#DAA520] transition-colors">Campus Location</span>
-                <span className="text-lg font-serif text-[#1a1a1a]">Malappuram, Kerala, India</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Minimal Form */}
-          <div className="lg:col-span-7 bg-white p-8 md:p-12 shadow-[0_40px_80px_rgba(0,0,0,0.03)] border border-gray-50 rounded-sm">
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="form-element flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Full Name</label>
-                <input type="text" className="border-b border-gray-200 py-3 focus:border-[#800000] outline-none transition-all bg-transparent text-[#1a1a1a]" placeholder="Ex: Rahul Das" />
-              </div>
-              <div className="form-element flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Email Address</label>
-                <input type="email" className="border-b border-gray-200 py-3 focus:border-[#800000] outline-none transition-all bg-transparent text-[#1a1a1a]" placeholder="rahul@example.com" />
-              </div>
-              <div className="form-element md:col-span-2 flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Program of Interest</label>
-                <select className="border-b border-gray-200 py-3 focus:border-[#800000] outline-none transition-all bg-transparent text-[#1a1a1a] appearance-none cursor-pointer">
-                  <option>Advanced Leadership</option>
-                  <option>Global Compliance</option>
-                  <option>Strategic Innovation</option>
-                </select>
-              </div>
-              <div className="form-element md:col-span-2 flex flex-col gap-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Message</label>
-                <textarea rows="3" className="border-b border-gray-200 py-3 focus:border-[#800000] outline-none transition-all bg-transparent text-[#1a1a1a] resize-none" placeholder="Your inquiry..."></textarea>
-              </div>
-              <div className="form-element md:col-span-2 mt-4">
-                <button className="w-full md:w-fit px-12 py-5 bg-[#1a1a1a] text-white text-[10px] font-black uppercase tracking-[0.3em] group relative overflow-hidden">
-                  <span className="relative z-10">Send Inquiry</span>
-                  <div className="absolute inset-0 bg-[#800000] translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+      {/* 1. THE MOUNTAIN REVEAL (BRAND APEX) */}
+      <div className="absolute bottom-0 left-0 w-full flex justify-center pointer-events-none select-none z-0 px-4">
+        <h2 
+          ref={revealTextRef}
+          className="text-[22vw] font-black text-white/[0.03] leading-none tracking-tighter uppercase mb-[-2vw]"
+        >
+          nazglobal
+        </h2>
       </div>
 
-      {/* --- INSTITUTIONAL FOOTER --- */}
-      <div className="footer-main bg-[#1a1a1a] text-white pt-24 pb-12 px-6 lg:px-20 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10">
         
-        {/* BIG BRANDING BACKGROUND */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-[0.02] select-none">
-           <h2 className="text-[25vw] font-serif font-black uppercase leading-none tracking-tighter">NAZGLOBAL</h2>
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col gap-20">
+        {/* 2. TOP NAV SECTION */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-20 mb-32">
           
-          <div className="flex flex-col md:flex-row justify-between items-start gap-12">
-            <div className="footer-logo">
-               <div className="w-16 h-16 bg-[#800000] flex items-center justify-center text-white font-serif font-bold text-3xl mb-6">N</div>
-               <p className="text-xs text-gray-400 uppercase tracking-widest leading-loose max-w-xs">
-                 Architecting the next generation of global professional excellence through rigorous academic heritage.
-               </p>
+          <div className="footer-link-group max-w-sm">
+            <div className="w-12 h-12 bg-blue-600 flex items-center justify-center text-white font-black text-2xl mb-8 rounded-xl">
+              N
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
-              <div className="flex flex-col gap-6">
-                <span className="text-[10px] font-bold text-[#DAA520] uppercase tracking-widest">Navigation</span>
-                <ul className="flex flex-col gap-4 text-xs font-medium text-gray-400">
-                  <li className="hover:text-white transition-colors cursor-pointer">About Academy</li>
-                  <li className="hover:text-white transition-colors cursor-pointer">Curriculum</li>
-                  <li className="hover:text-white transition-colors cursor-pointer">Faculty</li>
-                  <li className="hover:text-white transition-colors cursor-pointer">Archives</li>
-                </ul>
-              </div>
-              <div className="flex flex-col gap-6">
-                <span className="text-[10px] font-bold text-[#DAA520] uppercase tracking-widest">Connect</span>
-                <ul className="flex flex-col gap-4 text-xs font-medium text-gray-400">
-                  <li className="hover:text-white transition-colors cursor-pointer">LinkedIn</li>
-                  <li className="hover:text-white transition-colors cursor-pointer">Instagram</li>
-                  <li className="hover:text-white transition-colors cursor-pointer">YouTube</li>
-                </ul>
-              </div>
-            </div>
+            <h3 className="text-3xl font-bold text-white tracking-tight lowercase mb-6">
+              architecting professional <span className="text-blue-600 italic font-serif">excellence.</span>
+            </h3>
+            <p className="text-slate-500 text-sm font-medium leading-relaxed uppercase tracking-widest">
+              Standardizing Global Academy Credentials Since MMXXVI.
+            </p>
           </div>
 
-          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em]">
-              © MMXXVI Nazglobal Academy. All Rights Reserved.
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24 w-full md:w-auto">
+            <div className="footer-link-group flex flex-col gap-8">
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.4em]">Directory</span>
+              <ul className="flex flex-col gap-4 text-sm font-bold text-slate-400 lowercase">
+                <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2">the academy <ArrowUpRight size={12}/></li>
+                <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2">curriculum <ArrowUpRight size={12}/></li>
+                <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2">faculty <ArrowUpRight size={12}/></li>
+                <li className="hover:text-white transition-colors cursor-pointer flex items-center gap-2">archives <ArrowUpRight size={12}/></li>
+              </ul>
+            </div>
+
+            <div className="footer-link-group flex flex-col gap-8">
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.4em]">Connect</span>
+              <ul className="flex flex-col gap-4 text-sm font-bold text-slate-400 lowercase">
+                <li className="hover:text-white transition-colors cursor-pointer">linkedin</li>
+                <li className="hover:text-white transition-colors cursor-pointer">instagram</li>
+                <li className="hover:text-white transition-colors cursor-pointer">research gate</li>
+              </ul>
+            </div>
+            
+            <div className="footer-link-group hidden lg:flex flex-col gap-8">
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.4em]">Location</span>
+              <p className="text-slate-400 text-xs font-bold leading-relaxed uppercase tracking-widest">
+                Academic Campus Hub<br/>
+                Malappuram, Kerala<br/>
+                India — 676505
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. BOTTOM LEGAL BAR */}
+        <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-4">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.4em]">
+              Institutional Status: Fully Accredited MMXXVI
             </p>
-            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.4em]">
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+            <p className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.3em]">
+              © MMXXVI Nazglobal Academy.
+            </p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.3em]">
               A Member of <span className="text-white">Pentalks Collective</span>
             </p>
           </div>
         </div>
+
       </div>
 
+      {/* SUBTLE GLOW ACCENT */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[20vw] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
     </footer>
   );
 };

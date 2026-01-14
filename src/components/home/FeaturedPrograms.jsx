@@ -2,178 +2,170 @@ import React, { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import { Clock, BarChart, Globe, ShieldCheck, Zap } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const FeaturedPrograms = () => {
-  const scrollRef = useRef(null);
-  const triggerRef = useRef(null);
+  const containerRef = useRef(null);
 
   const programs = [
     {
       id: "01",
-      title: "Advanced Leadership",
-      category: "Management",
-      desc: "Designed for high-potential individuals aiming to master global strategies.",
+      title: "Strategic Leadership & Global Governance",
+      category: "Executive Management",
+      duration: "24 Months",
+      level: "Executive Tier",
+      desc: "An elite academic framework architected for visionary leaders. This program integrates global organizational dynamics with strategic foresight, preparing candidates to navigate the complexities of international markets and institutional change.",
+      features: ["International Board Mentorship", "Strategic Risk Assessment", "Global Market Integration"],
       img: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
     },
     {
       id: "02",
-      title: "Global Compliance",
-      category: "Professional",
-      desc: "Navigating international standards and industrial regulations with precision.",
+      title: "Global Commerce & Digital Economy",
+      category: "International Business",
+      duration: "18 Months",
+      level: "Advanced Professional",
+      desc: "A rigorous exploration of international trade standards, digital economy regulations, and ethical governance. Designed for professionals aiming to master technical precision in global fiscal operations and regulatory compliance.",
+      features: ["Trade Policy Analysis", "Digital Asset Regulation", "Ethical Leadership Protocols"],
       img: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop"
     },
     {
       id: "03",
-      title: "Strategic Innovation",
-      category: "Technology",
-      desc: "Leading change through architectural thinking and technological foresight.",
+      title: "Digital Systems & Computational Architecture",
+      category: "Technological Systems",
+      duration: "12 Months",
+      level: "Technical Specialist",
+      desc: "Leading technological transformation through computational thinking and advanced systems design. This program provides a high-fidelity environment for mastering architectural planning and next-generation technical innovation.",
+      features: ["Systemic Design Thinking", "High-Fidelity Prototyping", "Technical Synergy Labs"],
       img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop"
     }
   ];
 
   useGSAP(() => {
-    let mm = gsap.matchMedia();
-
-    // --- DESKTOP LOGIC (Horizontal Pinning) ---
-    mm.add("(min-width: 1024px)", () => {
-      const scrollTween = gsap.to(scrollRef.current, {
-        x: () => -(scrollRef.current.scrollWidth - window.innerWidth),
-        ease: "none",
-        scrollTrigger: {
-          trigger: triggerRef.current,
-          pin: true,
-          scrub: 1,
-          start: "top top",
-          end: () => `+=${scrollRef.current.scrollWidth}`,
-          invalidateOnRefresh: true,
-        }
-      });
-
-      programs.forEach((_, i) => {
-        gsap.from(`.prog-card-${i} .img-reveal`, {
-          scale: 1.5,
-          scrollTrigger: {
-            trigger: `.prog-card-${i}`,
-            containerAnimation: scrollTween,
-            start: "left center",
-            scrub: true,
-          }
-        });
-      });
-    });
-
-    // --- MOBILE LOGIC (Simple Vertical Reveal) ---
-    mm.add("(max-width: 1023px)", () => {
-      programs.forEach((_, i) => {
-        gsap.from(`.prog-card-${i}`, {
-          y: 50,
-          autoAlpha: 0,
-          duration: 1,
-          scrollTrigger: {
-            trigger: `.prog-card-${i}`,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          }
-        });
-      });
-    });
-
-    // Common Section Title Entrance
-    gsap.from(".section-header-reveal", {
-      y: 50,
-      autoAlpha: 0,
-      duration: 1.2,
+    // 1. Header Reveal
+    gsap.from(".prog-header-inner > *", {
+      y: 40,
+      opacity: 0,
+      stagger: 0.1,
+      duration: 1,
+      ease: "power3.out",
       scrollTrigger: {
-        trigger: triggerRef.current,
-        start: "top 80%",
+        trigger: ".prog-header-inner",
+        start: "top 90%",
       }
     });
 
-    return () => mm.revert();
-  }, { scope: triggerRef });
+    // 2. Snappy Card Reveal
+    const cards = gsap.utils.toArray(".prog-item");
+    cards.forEach((card) => {
+      gsap.from(card, {
+        y: 60,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: card,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        }
+      });
+    });
+  }, { scope: containerRef });
 
   return (
-    <div ref={triggerRef} className="bg-[#FDFDFD] overflow-hidden">
-      {/* Mobile: flex-col (Vertical)
-          Desktop: flex-row h-screen (Horizontal Pin)
-      */}
-      <div 
-        ref={scrollRef} 
-        className="relative flex flex-col lg:flex-row lg:h-screen w-full lg:w-fit items-center px-6 md:px-[10vw] py-20 lg:py-0 gap-16 lg:gap-40"
-      >
+    <section ref={containerRef} className="bg-white py-24 md:py-40 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 lg:px-20">
         
-        {/* SECTION INTRO PANEL */}
-        <div className="flex flex-col justify-center w-full lg:min-w-[40vw] section-header-reveal">
-          <div className="flex items-center gap-4 mb-6 lg:mb-8">
-            <div className="w-10 lg:w-12 h-[1px] bg-[#DAA520]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] lg:tracking-[0.5em] text-[#800000]">Programmes</span>
-          </div>
-          <h2 className="text-5xl lg:text-[10vw] font-serif leading-[0.9] lg:leading-[0.8] tracking-tighter text-[#1a1a1a]">
-            Curated <br /> <span className="italic text-[#800000]">Pathways.</span>
+        {/* SECTION HEADER */}
+        <div className="prog-header-inner flex flex-col items-center text-center mb-24 md:mb-40">
+          <span className="text-blue-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-4">
+            Academic Portfolios
+          </span>
+          <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tight lowercase leading-none">
+            Curated <span className="text-blue-600 italic font-serif">Pathways.</span>
           </h2>
-          <p className="mt-8 lg:mt-12 text-gray-400 max-w-sm font-medium leading-relaxed uppercase text-[9px] lg:text-[10px] tracking-widest">
-            A comprehensive curriculum architected to define the leaders of tomorrow.
+          <p className="mt-8 text-slate-500 max-w-xl text-lg font-medium leading-relaxed">
+            Standardizing professional mastery through specialized educational trajectories and high-fidelity research environments.
           </p>
         </div>
 
-        {/* PROGRAM CARDS */}
-        {programs.map((item, i) => (
-          <div 
-            key={i} 
-            className={`prog-card-${i} relative flex flex-col lg:flex-row items-center gap-8 lg:gap-20 w-full lg:min-w-[70vw] h-auto lg:h-[70vh]`}
-          >
-            {/* LARGE BACKGROUND NUMBER (Desktop Only for clarity) */}
-            <span className="hidden lg:block absolute -top-10 -left-10 text-[20vw] font-serif font-black text-gray-50 opacity-[0.05] select-none -z-10">
-              {item.id}
-            </span>
-
-            {/* IMAGE WRAPPER */}
-            <div className="relative w-full lg:w-1/2 aspect-[4/3] lg:h-full overflow-hidden rounded-sm shadow-xl lg:shadow-2xl border border-gray-100">
-              <img 
-                src={item.img} 
-                className="img-reveal w-full h-full object-cover grayscale lg:transition-all lg:duration-1000 lg:group-hover:grayscale-0"
-                alt={item.title}
-              />
-              <div className="absolute top-4 left-4 lg:top-6 lg:left-6">
-                <span className="bg-[#800000] text-white text-[8px] font-bold px-3 py-1.5 lg:px-4 lg:py-2 uppercase tracking-widest">
-                  {item.category}
-                </span>
+        {/* VERTICAL PROGRAMS LIST - Reduced to 3 with increased depth */}
+        <div className="flex flex-col gap-40 md:gap-64">
+          {programs.map((item, i) => (
+            <div key={i} className="prog-item group flex flex-col items-center text-center">
+              
+              {/* IMAGE WRAPPER */}
+              <div className="relative w-full max-w-5xl aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-[2.5rem] shadow-[0_40px_80px_-15px_rgba(30,58,138,0.12)] bg-slate-50 border border-slate-100">
+                <img 
+                  src={item.img} 
+                  className="prog-img w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
+                  alt={item.title}
+                />
+                <div className="absolute top-8 left-8">
+                  <span className="bg-white/95 backdrop-blur-md px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 shadow-sm border border-white">
+                    {item.category}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* TEXT CONTENT */}
-            <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-1/3">
-              <div>
-                <span className="text-[#DAA520] text-[10px] lg:text-xs font-black tracking-widest mb-2 block">{item.id}</span>
-                <h3 className="text-3xl lg:text-6xl font-serif text-[#1a1a1a] tracking-tight leading-none mb-4 lg:mb-6">
+              {/* CONTENT AREA - Increased Content */}
+              <div className="prog-content mt-16 max-w-3xl px-4">
+                <div className="flex justify-center gap-10 mb-8 text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} className="text-blue-600" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{item.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BarChart size={16} className="text-blue-600" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{item.level}</span>
+                  </div>
+                </div>
+
+                <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-8">
                   {item.title}
                 </h3>
-              </div>
-              <p className="text-sm lg:text-base text-gray-500 font-medium leading-relaxed">
-                {item.desc}
-              </p>
-              <div className="mt-4">
-                <button className="flex items-center gap-4 border-b border-[#800000] pb-2">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#800000]">Explore Syllabus</span>
-                  <span className="text-[#DAA520]">→</span>
-                </button>
+                
+                <p className="text-slate-500 text-sm md:text-lg leading-relaxed mb-12 font-medium">
+                  {item.desc}
+                </p>
+
+                {/* ADDITIONAL CONTENT BARS - The "Increase" */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+                  {item.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-50 rounded-xl border border-slate-100/50">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="w-16 h-[1px] bg-slate-200 mx-auto group-hover:w-32 group-hover:bg-blue-600 transition-all duration-700" />
               </div>
             </div>
-          </div>
-        ))}
-
-        {/* MOBILE VIEW ALL (Simple) */}
-        <div className="w-full lg:min-w-[30vw] flex justify-center lg:justify-start pt-10 lg:pt-0 lg:pr-[10vw]">
-           <button className="w-full lg:w-auto py-5 lg:p-24 border border-gray-200 lg:rounded-full text-[#800000] font-serif italic text-xl lg:text-4xl hover:bg-[#800000] hover:text-white transition-all">
-              View All
-           </button>
+          ))}
         </div>
 
+        {/* BOTTOM ACTION */}
+        <div className="mt-56 text-center">
+          <button className="group relative p-16 md:p-24 bg-slate-50 rounded-[3rem] w-full border border-slate-100 hover:border-blue-200 transition-all duration-700 overflow-hidden">
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
+                Institutional Academic Catalog 2026
+              </span>
+              <h4 className="text-3xl md:text-5xl font-black text-slate-900 group-hover:text-blue-600 transition-colors tracking-tight">
+                View All <span className="italic font-serif lowercase text-blue-600">Academic Specializations.</span>
+              </h4>
+            </div>
+            <span className="absolute bottom-0 right-0 text-[15vw] font-black text-slate-200/20 translate-y-1/2 translate-x-1/4 uppercase tracking-tighter select-none pointer-events-none group-hover:text-blue-600/5 transition-colors">Nazglobal</span>
+          </button>
+        </div>
       </div>
-    </div>
+
+      <div className="absolute top-1/2 -left-20 w-80 h-80 bg-blue-50 rounded-full blur-[120px] opacity-60 pointer-events-none" />
+      <div className="absolute bottom-0 -right-20 w-[30rem] h-[30rem] bg-slate-100 rounded-full blur-[120px] opacity-40 pointer-events-none" />
+    </section>
   );
 };
 
-export default FeaturedPrograms;
+export default FeaturedPrograms;  

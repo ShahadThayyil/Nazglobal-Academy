@@ -1,9 +1,7 @@
 import React, { useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-
-gsap.registerPlugin(ScrollTrigger);
+import { ArrowUpRight, ShieldCheck } from 'lucide-react';
 
 const RESULTS = [
   { rank: "AIR 01", name: "Sarah Malik", year: "2025", firm: "Global Design Corp", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop" },
@@ -12,131 +10,108 @@ const RESULTS = [
 ];
 
 const SuccessArchives = () => {
-  const sectionRef = useRef(null);
+  const containerRef = useRef(null);
 
   useGSAP(() => {
-    // 1. Ticker Animation (Continuous Loop)
+    gsap.from(".header-reveal > *", {
+      y: 20,
+      opacity: 0,
+      stagger: 0.1,
+      duration: 0.8,
+      ease: "power3.out",
+    });
+
+    gsap.from(".honor-card", {
+      opacity: 0,
+      y: 30,
+      stagger: 0.1,
+      duration: 1,
+      ease: "power2.out",
+    });
+
     gsap.to(".results-ticker", {
       xPercent: -50,
       ease: "none",
-      duration: 20,
+      duration: 25,
       repeat: -1,
     });
-
-    // 2. Card Reveal Animation
-    gsap.from(".result-card", {
-      y: 60,
-      autoAlpha: 0,
-      stagger: 0.15,
-      duration: 1.2,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: ".results-grid",
-        start: "top 85%",
-      }
-    });
-
-    // 3. Staggered Background Text Parallax
-    gsap.to(".bg-archive-text", {
-      x: -100,
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        scrub: 1,
-      }
-    });
-
-  }, { scope: sectionRef });
+  }, { scope: containerRef });
 
   return (
-    <section ref={sectionRef} className="relative bg-[#FDFDFD] py-24 md:py-40 overflow-hidden border-t border-gray-100">
-      
-      {/* KINETIC BG TEXT */}
-      <div className="absolute top-1/4 left-0 pointer-events-none opacity-[0.02] select-none z-0">
-        <h2 className="bg-archive-text text-[30vw] font-serif font-black uppercase whitespace-nowrap leading-none">
-          Proven Excellence
-        </h2>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-20 relative z-10">
+    <section ref={containerRef} className="relative bg-white py-16 md:py-24 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 lg:px-20 w-full relative z-10">
         
-        {/* HEADER AREA */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-24 gap-12">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-[1px] bg-[#DAA520]" />
-              <span className="text-[10px] font-black text-[#800000] uppercase tracking-[0.5em]">The Outcome</span>
-            </div>
-            <h2 className="text-6xl md:text-8xl font-serif leading-[0.85] tracking-tighter text-[#1a1a1a]">
-              Success <br /> <span className="italic text-[#800000]">Archives.</span>
-            </h2>
-          </div>
-          <div className="flex flex-col gap-4 text-left md:text-right">
-             <span className="text-4xl md:text-6xl font-serif text-[#DAA520]">98%</span>
-             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-loose max-w-[180px]">
-                Global Placement Rate Across 24 Countries.
-             </p>
-          </div>
+        {/* HEADER */}
+        <div className="header-reveal flex flex-col items-center text-center mb-12 md:mb-20">
+          <span className="text-blue-600 font-bold uppercase tracking-[0.3em] text-[10px] mb-3">
+            Institutional Honor Wall
+          </span>
+          <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight lowercase leading-none">
+            success <span className="text-blue-600 italic font-serif">archives.</span>
+          </h2>
+          <p className="mt-4 text-slate-500 max-w-xl text-sm md:text-base font-medium">
+            The measurable impact of our graduates across the global architectural landscape.
+          </p>
         </div>
 
-        {/* DYNAMIC MARQUEE (Results Ticker) */}
-        <div className="relative w-screen left-1/2 -translate-x-1/2 overflow-hidden mb-32 border-y border-gray-100 py-6 bg-white rotate-[-1deg]">
-          <div className="results-ticker flex whitespace-nowrap gap-12 items-center">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="flex items-center gap-12">
-                <span className="text-xl md:text-2xl font-serif italic text-[#800000]">All India Rank 01 — 2025</span>
-                <div className="w-2 h-2 rounded-full bg-[#DAA520]" />
-                <span className="text-xl md:text-2xl font-bold uppercase tracking-widest text-[#1a1a1a]">Strategic Compliance Mastery</span>
-                <div className="w-2 h-2 rounded-full bg-gray-200" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* RESULTS GRID */}
-        <div className="results-grid grid grid-cols-1 md:grid-cols-3 gap-10">
+        {/* FIXED GRID - Optimized for Viewport Size */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           {RESULTS.map((item, i) => (
-            <div key={i} className="result-card group flex flex-col gap-6">
-              {/* Image Frame */}
-              <div className="relative aspect-[4/5] overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-1000">
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute top-6 left-6 bg-[#800000] text-white text-[10px] font-bold px-4 py-2 uppercase tracking-widest shadow-xl">
-                  {item.rank}
-                </div>
+            <div 
+              key={i} 
+              className="honor-card flex flex-col bg-white rounded-[1.5rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-shadow duration-500"
+            >
+              {/* Image Container - Aspect ratio controlled */}
+              <div className="aspect-[3/4] w-full overflow-hidden bg-slate-100">
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  className="w-full h-full object-cover object-top" 
+                />
               </div>
               
-              {/* Info */}
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-baseline">
-                   <h4 className="text-2xl font-serif text-[#1a1a1a]">{item.name}</h4>
-                   <span className="text-[10px] font-black text-[#DAA520]">{item.year} Class</span>
-                </div>
-                <div className="flex items-center gap-3">
-                   <div className="w-6 h-[1px] bg-gray-200" />
-                   <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Placed at: {item.firm}</p>
-                </div>
+              {/* Content Block */}
+              <div className="p-6 md:p-8 flex flex-col items-center text-center">
+                 <div className="inline-block px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-full mb-4">
+                    {item.rank}
+                 </div>
+                 
+                 <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-1">
+                   {item.name}
+                 </h3>
+                 
+                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
+                    Placed at {item.firm}
+                 </p>
+                 
+                 <div className="w-8 h-[1px] bg-blue-100 mb-4" />
+                 
+                 <span className="text-slate-300 text-[9px] font-bold uppercase tracking-widest">
+                   Class of {item.year}
+                 </span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* FOOTER ACTION */}
-        <div className="mt-24 pt-16 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-10">
-           <div className="flex items-center gap-6">
-              <div className="text-center md:text-left">
-                 <p className="text-[9px] font-bold text-gray-300 uppercase tracking-[0.4em] mb-2">Audit Report Status</p>
-                 <div className="flex items-center gap-3">
-                    <span className="text-xs font-medium text-green-600">Verified Results MMXXVI</span>
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                 </div>
+        {/* TICKER */}
+        <div className="relative mt-20 overflow-hidden border-y border-slate-100 py-4">
+          <div className="results-ticker flex whitespace-nowrap gap-12 items-center opacity-40">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex items-center gap-12">
+                <span className="text-[9px] font-bold uppercase tracking-[0.5em] text-slate-900">Verified Outcome 2026</span>
+                <ShieldCheck size={14} className="text-blue-600" />
               </div>
-           </div>
-           
-           <button className="group relative overflow-hidden bg-[#1a1a1a] px-12 py-5 text-white transition-all">
-              <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em]">Full Placement Report</span>
-              <div className="absolute inset-0 bg-[#800000] translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-           </button>
+            ))}
+          </div>
         </div>
 
+        {/* CTA */}
+        <div className="mt-12 flex flex-col items-center">
+           <button className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.5em] text-slate-900 border-b-2 border-slate-200 pb-1 hover:border-blue-600 transition-colors">
+              Full Institutional Report <ArrowUpRight size={14} className="text-blue-600" />
+           </button>
+        </div>
       </div>
     </section>
   );
